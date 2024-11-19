@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # Expone la aplicación en el puerto 8080
+    environment:
+      # Configuración de la conexión a la base de datos
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@db:1521:xe
+      SPRING_DATASOURCE_USERNAME: user_springboot
+      SPRING_DATASOURCE_PASSWORD: desarrollo2024
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: oracle.jdbc.OracleDriver
+
+      # Configuración de Hibernate/JPA
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.Oracle12cDialect
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+
+      # Asegura que el backend escuche en todas las interfaces
+      SERVER_ADDRESS: 0.0.0.0
+
+    depends_on:
+      - db # Asegura que la base de datos se inicie antes de la aplicación
+    networks:
+      - app-network
+
+  db:
+    image: gvenzl/oracle-xe:latest # Imagen ligera de Oracle XE
+    container_name: oracle-db
+    ports:
+      - "1521:1521" # Expone Oracle en el puerto 1521
+    environment:
+      ORACLE_PASSWORD: desarrollo2024
+      ORACLE_ENABLE_XDB: "true" # Habilita el acceso XDB
+    networks:
+      - app-network
+    volumes:
+      - oracle-data:/opt/oracle/oradata # Persiste los datos en un volumen
+
+# Configuración de la red compartida
+networks:
+  app-network:
+
+# Configuración de persistencia para la base de datos
+volumes:
+  oracle-data:

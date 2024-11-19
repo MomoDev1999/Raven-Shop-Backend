@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "persona")
 public class Persona {
@@ -16,23 +18,29 @@ public class Persona {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "nombre")
-    private String nombre;
+    @Column(name = "username")
+    private String user;
 
-    @Column(name = "apellidos")
-    private String apellidos;
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Column(name = "email")
     private String email;
 
-    @Column(name = "telefono")
-    private String telefono;
+    @Column(name = "address")
+    private String address;
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "rol")
-    private String rol;
 
     // Getters y Setters
 
@@ -44,20 +52,44 @@ public class Persona {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getUser() {
+        return user;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setUser(String user) {
+        this.user = user;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getEmail() {
@@ -68,12 +100,12 @@ public class Persona {
         this.email = email;
     }
 
-    public String getTelefono() {
-        return telefono;
+    public String getAddress() {
+        return address;
     }
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPassword() {
@@ -82,13 +114,5 @@ public class Persona {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
     }
 }

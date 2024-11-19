@@ -1,13 +1,13 @@
 package com.example.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.example.model.Persona;
 import com.example.repository.PersonaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class PersonaServiceImpl implements PersonaService {
@@ -16,8 +16,8 @@ public class PersonaServiceImpl implements PersonaService {
     private PersonaRepository personaRepository;
 
     @Override
-    public List<Persona> findAll() {
-        return personaRepository.findAll();
+    public Page<Persona> findAll(Pageable pageable) {
+        return personaRepository.findAll(pageable);
     }
 
     @Override
@@ -27,18 +27,17 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     public Persona createPersona(Persona persona) {
+        // Guardar contraseña en texto plano (solo para propósitos educativos)
         return personaRepository.save(persona);
     }
 
     @Override
     public Persona updatePersona(Long id, Persona persona) {
-
         if (personaRepository.existsById(id)) {
             persona.setId(id);
             return personaRepository.save(persona);
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -47,9 +46,18 @@ public class PersonaServiceImpl implements PersonaService {
     }
 
     @Override
-    public Optional<Persona> authenticate(String email, String password) {
-        return personaRepository.findByEmail(email)
+    public Optional<Persona> authenticate(String emailOrUser, String password) {
+        return personaRepository.findByEmailOrUser(emailOrUser, emailOrUser)
                 .filter(persona -> persona.getPassword().equals(password));
     }
 
+    @Override
+    public boolean emailExists(String email) {
+        return personaRepository.findByEmail(email).isPresent();
+    }
+
+    @Override
+    public boolean userExists(String user) {
+        return personaRepository.findAll().stream().anyMatch(p -> p.getUser().equals(user));
+    }
 }

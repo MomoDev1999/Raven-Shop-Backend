@@ -1,13 +1,14 @@
 package com.example.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.example.model.Persona;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Optional;
 
 public interface PersonaService {
 
-    List<Persona> findAll();
+    Page<Persona> findAll(Pageable pageable);
 
     Optional<Persona> findById(long id);
 
@@ -18,4 +19,8 @@ public interface PersonaService {
     void deleteById(long id);
 
     Optional<Persona> authenticate(String email, String password);
+
+    boolean emailExists(String email);
+
+    boolean userExists(String user);
 }

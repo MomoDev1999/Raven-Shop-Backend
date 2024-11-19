@@ -26,8 +26,8 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public Compra createCompra(Compra compra) {
-        return compraRepository.save(compra);
+    public List<Compra> createCompras(List<Compra> compras) {
+        return compraRepository.saveAll(compras);
     }
 
     @Override
@@ -44,4 +44,10 @@ public class CompraServiceImpl implements CompraService {
     public void deleteById(long id) {
         compraRepository.deleteById(id);
     }
+
+    @Override
+    public List<Compra> findByPersonaId(long idPersona) {
+        return compraRepository.findByPersonaId(idPersona);
+    }
+
 }

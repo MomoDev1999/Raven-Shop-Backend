@@ -1,33 +1,33 @@
 package com.example.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.example.model.Persona;
 import com.example.model.LoginRequest;
-
 import com.example.service.PersonaService;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.HashMap;
 
+import java.util.Map;
+import java.util.Optional;
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/personas")
+
 public class PersonaController {
+
     @Autowired
     private PersonaService personaService;
 
     @GetMapping
-    public List<Persona> findAll() {
-        return personaService.findAll();
+    public Page<Persona> findAll(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return personaService.findAll(PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
@@ -51,13 +51,40 @@ public class PersonaController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        System.out.println("JSON recibido - Email: " + loginRequest.getEmail());
+        System.out.println("JSON recibido - Contraseña: " + loginRequest.getPassword());
+
         Optional<Persona> persona = personaService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
 
         if (persona.isPresent()) {
-            return "Has iniciado sesión correctamente!";
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true); // Agregar bandera de éxito
+            Map<String, Object> user = new HashMap<>();
+            user.put("id", persona.get().getId());
+            user.put("email", persona.get().getEmail());
+            user.put("user", persona.get().getUser());
+            response.put("user", user);
+            return ResponseEntity.ok(response);
         } else {
-            return "Credenciales incorrectas. Inténtalo de nuevo.";
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false); // Indicar fallo
+            response.put("message", "Credenciales incorrectas.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
+    }
+
+    @PostMapping("/usuarios/existe")
+    public ResponseEntity<?> userExists(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String user = request.get("user");
+
+        boolean emailExists = personaService.emailExists(email);
+        boolean userExists = personaService.userExists(user);
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("emailExists", emailExists);
+        response.put("userExists", userExists);
+        return ResponseEntity.ok(response);
     }
 }

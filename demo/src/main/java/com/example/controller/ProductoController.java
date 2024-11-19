@@ -1,43 +1,94 @@
 package com.example.controller;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.example.dto.ProductoDTO;
+import com.example.dto.RatingDTO;
 import com.example.model.Producto;
+import com.example.model.Rating;
 import com.example.service.ProductoService;
+import com.example.service.RatingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/productos")
+@CrossOrigin(origins = "*")
 public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
 
+    @Autowired
+    private RatingService ratingService;
+
     @GetMapping
-    public List<Producto> findAll() {
-        return productoService.findAll();
+    public List<ProductoDTO> findAll() {
+        // Convertimos la lista de Productos a ProductoDTO para incluir el rating
+        return productoService.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Optional<Producto> findById(@PathVariable long id) {
-        return productoService.findById(id);
+    public ProductoDTO findById(@PathVariable long id) {
+        // Buscamos el producto por ID y convertimos a DTO
+        Producto producto = productoService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        return convertToDto(producto);
     }
 
     @PostMapping
-    public Producto createProducto(@RequestBody Producto producto) {
-        return productoService.createProducto(producto);
+    public List<Producto> create(@RequestBody List<Producto> productos) {
+        // Crear múltiples productos
+        return productos.stream()
+                .map(productoService::createProducto)
+                .collect(Collectors.toList());
     }
 
     @PutMapping("/{id}")
-    public Producto updateProducto(@PathVariable long id, @RequestBody Producto producto) {
-        return productoService.updateProducto(id, producto);
+    public Producto update(@PathVariable long id, @RequestBody Producto producto) {
+        // Actualizar un producto existente
+        Producto updatedProducto = productoService.updateProducto(id, producto);
+        if (updatedProducto == null) {
+            throw new RuntimeException("Producto no encontrado para actualizar");
+        }
+        return updatedProducto;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable long id) {
+    public void delete(@PathVariable long id) {
+        // Eliminar un producto por ID
         productoService.deleteById(id);
+    }
+
+    /**
+     * Convierte un Producto en un ProductoDTO e incluye la información de Rating
+     */
+    private ProductoDTO convertToDto(Producto producto) {
+        ProductoDTO productoDTO = new ProductoDTO();
+        productoDTO.setId(producto.getId());
+        productoDTO.setTitle(producto.getTitle());
+        productoDTO.setPrice(producto.getPrice());
+        productoDTO.setDescription(producto.getDescription());
+        productoDTO.setCategory(producto.getCategory());
+        productoDTO.setImage(producto.getImage());
+
+        // Buscar ratings relacionados con este producto
+        List<Rating> ratings = ratingService.findAll().stream()
+                .filter(rating -> rating.getProducto().getId() == producto.getId())
+                .collect(Collectors.toList());
+
+        if (!ratings.isEmpty()) {
+            Rating rating = ratings.get(0); // Asumimos un solo rating asociado
+            RatingDTO ratingDTO = new RatingDTO();
+            ratingDTO.setRate(rating.getRate());
+            ratingDTO.setCount(ratings.size());
+            productoDTO.setRating(ratingDTO);
+        }
+
+        return productoDTO;
     }
 }

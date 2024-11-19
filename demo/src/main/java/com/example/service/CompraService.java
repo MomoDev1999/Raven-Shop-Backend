@@ -11,9 +11,11 @@ public interface CompraService {
 
     Optional<Compra> findById(long id);
 
-    Compra createCompra(Compra compra);
+    List<Compra> createCompras(List<Compra> compras);
 
     Compra updateCompra(Long id, Compra compra);
 
     void deleteById(long id);
+
+    List<Compra> findByPersonaId(long idPersona);
 }

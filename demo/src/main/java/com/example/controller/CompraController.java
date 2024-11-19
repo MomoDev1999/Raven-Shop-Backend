@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/compras")
+@CrossOrigin(origins = "*")
 public class CompraController {
 
     @Autowired
@@ -27,8 +28,8 @@ public class CompraController {
     }
 
     @PostMapping
-    public Compra createCompra(@RequestBody Compra compra) {
-        return compraService.createCompra(compra);
+    public List<Compra> createCompras(@RequestBody List<Compra> compras) {
+        return compraService.createCompras(compras);
     }
 
     @PutMapping("/{id}")
@@ -40,4 +41,10 @@ public class CompraController {
     public void deleteById(@PathVariable long id) {
         compraService.deleteById(id);
     }
+
+    @GetMapping("/persona/{idPersona}")
+    public List<Compra> findByPersonaId(@PathVariable long idPersona) {
+        return compraService.findByPersonaId(idPersona);
+    }
+
 }
