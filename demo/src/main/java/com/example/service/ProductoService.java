@@ -16,4 +16,6 @@ public interface ProductoService {
     Producto updateProducto(Long id, Producto producto);
 
     void deleteById(long id);
+
+    List<Producto> searchByKeyword(String keyword);
 }

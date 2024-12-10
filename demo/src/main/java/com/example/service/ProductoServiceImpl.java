@@ -2,6 +2,7 @@ package com.example.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,14 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void deleteById(long id) {
         productoRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Producto> searchByKeyword(String keyword) {
+        return productoRepository.findAll().stream()
+                .filter(producto -> producto.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                        producto.getDescription().toLowerCase().contains(keyword.toLowerCase()) ||
+                        producto.getCategory().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }

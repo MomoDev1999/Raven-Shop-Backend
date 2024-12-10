@@ -64,6 +64,14 @@ public class ProductoController {
         productoService.deleteById(id);
     }
 
+    // Nuevo endpoint de búsqueda
+    @GetMapping("/search")
+    public List<ProductoDTO> searchByKeyword(@RequestParam String keyword) {
+        return productoService.searchByKeyword(keyword).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Convierte un Producto en un ProductoDTO e incluye la información de Rating
      */
