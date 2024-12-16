@@ -104,4 +104,5 @@ public class Producto {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
 }

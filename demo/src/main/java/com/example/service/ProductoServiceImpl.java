@@ -16,6 +16,9 @@ public class ProductoServiceImpl implements ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private RatingService ratingService;
+
     @Override
     public List<Producto> findAll() {
         return productoRepository.findAll();
@@ -43,7 +46,16 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void deleteById(long id) {
-        productoRepository.deleteById(id);
+        // Verificar si el producto existe
+        if (productoRepository.existsById(id)) {
+            // Eliminar los ratings asociados
+            ratingService.findByProductoId(id).forEach(rating -> ratingService.deleteById(rating.getId()));
+
+            // Eliminar el producto
+            productoRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("El producto con el ID especificado no existe.");
+        }
     }
 
     @Override

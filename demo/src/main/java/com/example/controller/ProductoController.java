@@ -1,3 +1,4 @@
+// ProductoController.java
 package com.example.controller;
 
 import com.example.dto.ProductoDTO;
@@ -84,16 +85,17 @@ public class ProductoController {
         productoDTO.setCategory(producto.getCategory());
         productoDTO.setImage(producto.getImage());
 
-        // Buscar ratings relacionados con este producto
-        List<Rating> ratings = ratingService.findAll().stream()
-                .filter(rating -> rating.getProducto().getId() == producto.getId())
-                .collect(Collectors.toList());
+        // Buscar ratings relacionados con este producto directamente desde el servicio
+        List<Rating> ratings = ratingService.findByProductoId(producto.getId());
 
         if (!ratings.isEmpty()) {
-            Rating rating = ratings.get(0); // Asumimos un solo rating asociado
+            // Calcular el promedio del rate y el conteo total
+            double averageRate = ratings.stream().mapToDouble(Rating::getRate).average().orElse(0.0);
+            int totalCount = ratings.size();
+
             RatingDTO ratingDTO = new RatingDTO();
-            ratingDTO.setRate(rating.getRate());
-            ratingDTO.setCount(ratings.size());
+            ratingDTO.setRate(averageRate);
+            ratingDTO.setCount(totalCount);
             productoDTO.setRating(ratingDTO);
         }
 

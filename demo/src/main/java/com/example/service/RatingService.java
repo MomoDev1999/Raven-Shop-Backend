@@ -15,4 +15,6 @@ public interface RatingService {
     Rating updateRating(Long id, Rating rating);
 
     void deleteById(long id);
+
+    List<Rating> findByProductoId(long productoId);
 }

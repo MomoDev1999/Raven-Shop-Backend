@@ -16,6 +16,11 @@ public class RatingServiceImpl implements RatingService {
     private RatingRepository ratingRepository;
 
     @Override
+    public List<Rating> findByProductoId(long productoId) {
+        return ratingRepository.findByProductoId(productoId);
+    }
+
+    @Override
     public List<Rating> findAll() {
         return ratingRepository.findAll();
     }
